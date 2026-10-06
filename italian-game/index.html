@@ -10,33 +10,79 @@
           --good: #15803d; --bad: #b91c1c; --alt: #b45309; }
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
+  html, body { overflow-x: clip; } /* fanned sheets never cause sideways scrolling */
   body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
   button { touch-action: manipulation; font: inherit; color: var(--ink); cursor: pointer; }
-  header { padding: 12px 16px 4px; display: flex; align-items: baseline; gap: 10px; }
-  header .brand { font-family: Georgia, serif; color: var(--amber); font-weight: 700; }
-  header h1 { font-family: Georgia, serif; font-size: 20px; margin: 0; }
+  /* Top bar: Elvyn logo on the left, page title centred (same black badge as the portal's BrandLogo). */
+  .topbar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; max-width: 1180px; margin: 0 auto; padding: 16px 20px 4px; }
+  .logo { justify-self: start; display: inline-flex; align-items: center; height: 40px; padding: 0 10px; background: #000; border-radius: 10px; }
+  .logo img { display: block; height: 28px; width: auto; }
+  .topbar h1 { grid-column: 2; margin: 0; text-align: center; font: 700 26px/1.2 Georgia, "Times New Roman", serif; letter-spacing: -.01em; }
+  @media (max-width: 600px) {
+    .topbar { grid-template-columns: 1fr; justify-items: center; gap: 10px; padding-top: 14px; }
+    .topbar h1 { grid-column: auto; font-size: 22px; }
+    .logo { justify-self: center; height: 34px; } .logo img { height: 23px; }
+  }
 
-  /* Home: level cards */
-  #home { max-width: 860px; margin: 0 auto; padding: 4px 16px 28px; }
-  .hello { color: var(--muted); margin: 2px 0 14px; }
-  #continue { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left;
-    background: var(--amber); color: #fff; border: 0; border-radius: 14px; padding: 16px 18px; margin-bottom: 18px;
-    box-shadow: 0 2px 8px rgba(217, 119, 6, .35); }
-  #continue b { font-size: 19px; display: block; } #continue small { opacity: .9; font-size: 14px; }
-  #continue .go { font-size: 26px; }
-  .levels { display: grid; grid-template-columns: 1fr; gap: 12px; }
-  @media (min-width: 640px) { .levels { grid-template-columns: 1fr 1fr; } }
-  @media (min-width: 900px) { .levels { grid-template-columns: 1fr 1fr 1fr; } }
-  .card { display: flex; gap: 14px; align-items: flex-start; text-align: left; background: #fff; border: 1.5px solid var(--line);
-    border-radius: 14px; padding: 14px; }
-  .card:hover { border-color: var(--amber); }
-  .card.complete { border-color: #bbf7d0; background: #f7fdf9; }
-  .num { flex: none; width: 42px; height: 42px; border-radius: 50%; background: var(--amber-soft); color: var(--alt);
-    font: 700 19px Georgia, serif; display: flex; align-items: center; justify-content: center; }
-  .card.complete .num { background: var(--good); color: #fff; }
-  .card h2 { margin: 0 0 2px; font-size: 17px; }
-  .card p { margin: 0 0 8px; color: var(--muted); font-size: 14px; }
-  .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; }
+  /* Home: guide card + level folders */
+  #home { max-width: 1180px; margin: 0 auto; padding: 18px 20px 36px; display: grid; gap: 26px; }
+  @media (min-width: 900px) { #home { grid-template-columns: 290px minmax(0, 1fr); align-items: start; } .guide { position: sticky; top: 20px; } }
+  .guide { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 6px 20px rgba(0,0,0,.04); }
+  .guide h2 { margin: 0 0 14px; font: 700 12px/1 system-ui, sans-serif; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+  .guide ol { margin: 0 0 18px; padding: 0; list-style: none; counter-reset: step; display: grid; gap: 10px; }
+  .guide li { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; line-height: 1.4; }
+  .guide li::before { counter-increment: step; content: counter(step); flex: none; width: 24px; height: 24px; border-radius: 50%;
+    background: var(--amber-soft); color: var(--alt); font: 700 13px/24px system-ui, sans-serif; text-align: center; }
+  .prog { margin-bottom: 16px; }
+  .prog .row { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); margin-bottom: 7px; }
+  .prog .row b { color: var(--amber); }
+  .bar { height: 8px; border-radius: 99px; background: #f0eeec; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0; border-radius: 99px; background: var(--amber); transition: width .6s ease; }
+  #continue { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; text-align: left;
+    background: var(--amber); color: #fff; border: 0; border-radius: 12px; padding: 14px 16px;
+    box-shadow: 0 2px 8px rgba(217, 119, 6, .35); transition: transform .15s ease, box-shadow .15s ease; }
+  #continue:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(217, 119, 6, .35); }
+  #continue:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  #continue b { display: block; font-size: 17px; } #continue small { font-size: 13px; opacity: .92; } #continue .go { font-size: 20px; }
+
+  .levels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px 16px; padding-top: 10px; }
+  @media (min-width: 640px) { .levels { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px 26px; } }
+  @media (min-width: 900px) and (max-width: 1080px) { .levels { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  /* A level is a folder; each line is a sheet of paper inside it. Hover/focus fans the sheets out. */
+  .folder { position: relative; display: block; width: 100%; aspect-ratio: 5 / 4; padding: 0; border: 0; background: none;
+    text-align: left; perspective: 900px; -webkit-tap-highlight-color: transparent; outline: none;
+    animation: rise .5s cubic-bezier(.2, .9, .25, 1) both; animation-delay: calc(var(--i) * 60ms); }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+  .folder .back { position: absolute; left: 0; right: 0; top: 10%; bottom: 0; background: #d8c196; border-radius: 6px 14px 14px 14px; }
+  .folder .back::before { content: ""; position: absolute; left: 0; top: -9%; width: 42%; height: 14%; background: #d8c196; border-radius: 10px 12px 0 0; }
+  .folder .tabno { position: absolute; left: 12px; top: 3.5%; font: 700 12px/1 system-ui, sans-serif; color: #6b5330; z-index: 15; transition: opacity .2s ease; }
+  .folder:hover .tabno, .folder:focus-visible .tabno, .folder.opening .tabno { opacity: 0; }
+  .folder .files { position: absolute; left: 8%; right: 8%; top: 15%; bottom: 20%; }
+  .folder .file { position: absolute; inset: 0; border-radius: 6px; background: #fff;
+    background-image: repeating-linear-gradient(180deg, transparent 0 12px, #edf1f6 12px 13px); background-position: 0 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .14);
+    transform: translateY(var(--y)) rotate(var(--r));
+    transition: transform .45s cubic-bezier(.2, .9, .3, 1.2); transition-delay: var(--d); }
+  .folder .file.done::after { content: "✓"; position: absolute; top: 5px; right: 7px; width: 18px; height: 18px; border-radius: 50%;
+    background: var(--good); color: #fff; font: 700 11px/18px system-ui, sans-serif; text-align: center; }
+  .folder .front { position: absolute; left: 0; right: 0; bottom: 0; height: 62%; z-index: 20; display: flex; align-items: flex-end;
+    padding: 14px 16px; border-radius: 12px; background: linear-gradient(180deg, #f5e6c8, #ebd7af);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75), 0 10px 20px -8px rgba(120, 84, 30, .38);
+    transform-origin: 50% 100%; transition: transform .45s cubic-bezier(.2, .9, .25, 1), box-shadow .3s ease; }
+  .folder .ttl { font: 700 clamp(15px, 1.9vw, 19px)/1.2 Georgia, "Times New Roman", serif; color: #3b2a10; }
+  .folder:hover .front, .folder:focus-visible .front { transform: rotateX(-16deg);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75), 0 20px 30px -12px rgba(120, 84, 30, .45); }
+  .folder:hover .file, .folder:focus-visible .file { transform: translate(var(--hx), var(--hy)) rotate(var(--hr)); }
+  .folder:focus-visible .front { outline: 3px solid var(--amber); outline-offset: 3px; }
+  .folder.opening .front { transform: rotateX(-34deg); }
+  .folder.opening .file { transform: translate(var(--hx), calc(var(--hy) - 18%)) rotate(var(--hr)); }
+  .folder.complete .back, .folder.complete .back::before { background: #b7d7bf; }
+  .folder.complete .front { background: linear-gradient(180deg, #e7f4ea, #d2e9d8); box-shadow: inset 0 1px 0 rgba(255,255,255,.75), 0 10px 20px -8px rgba(21, 128, 61, .3); }
+  .folder.complete .tabno { color: var(--good); }
+  @media (prefers-reduced-motion: reduce) { .folder, .folder .front, .folder .file, .bar i { animation: none; transition: none; } }
+
   .side { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--ink); font-size: 12px; font-weight: 600; }
   .side::before { content: ""; width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--ink); }
   .side.w::before { background: #fff; } .side.b::before { background: var(--ink); }
@@ -114,11 +160,21 @@
 </style>
 </head>
 <body>
-<header><span class="brand">Elvyn</span><h1>Italian Game Practice</h1></header>
+<header class="topbar">
+  <span class="logo" role="img" aria-label="Elvyn Chess"><img src="data:image/png;base64,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" alt=""></span>
+  <h1>Italian Game Practice</h1>
+</header>
 
 <section id="home">
-  <p class="hello">Pick a level. Play the moves from the lesson. Get 3 stars by playing without hints.</p>
-  <button id="continue"><span><b id="contTitle">Start</b><small id="contSub"></small></span><span class="go">▶</span></button>
+  <aside class="guide">
+    <h2>How it works</h2>
+    <ol><li>Pick a level.</li><li>Play the moves from the lesson.</li><li>Get 3 stars by playing without hints.</li></ol>
+    <div class="prog">
+      <div class="row"><span id="progText"></span><b id="starText"></b></div>
+      <div class="bar"><i id="progBar"></i></div>
+    </div>
+    <button id="continue"><span><b id="contTitle">Start</b><small id="contSub"></small></span><span class="go">▶</span></button>
+  </aside>
   <div class="levels" id="levels"></div>
 </section>
 
@@ -292,16 +348,26 @@ function showHome() {
   gen++; drag = null;
   $('play').hidden = true; $('home').hidden = false;
   $('levels').innerHTML = DATA.map((ch, i) => {
-    const done = ch.lines.filter((l) => progress[l.id]).length;
-    const stars = ch.lines.reduce((n, l) => n + (progress[l.id] || 0), 0);
-    const side = levelSide(ch);
-    return `<button class="card${done === ch.lines.length ? ' complete' : ''}" data-c="${i}">
-      <span class="num">${done === ch.lines.length ? '✓' : i + 1}</span>
-      <span><h2>${ch.title}</h2><p>${ch.desc}</p>
-      <span class="meta"><span class="side ${side}">${sideLabel(side)}</span>
-      <span>${done} of ${ch.lines.length} done</span><span class="stars${stars ? '' : ' none'}">★ ${stars} / ${ch.lines.length * 3}</span></span></span>
+    const n = ch.lines.length, done = ch.lines.filter((l) => progress[l.id]).length, mid = (n - 1) / 2;
+    // One sheet per line: stacked and slightly turned at rest, fanned out on hover/focus.
+    const files = ch.lines.map((l, j) => {
+      const k = j - mid;
+      const vars = `--y:${(-j * Math.min(5, 14 / n)).toFixed(1)}%;--r:${(k * 1.6).toFixed(1)}deg;--hx:${(k * Math.min(9, 30 / n)).toFixed(1)}%;--hy:${-(22 + j * 5)}%;--hr:${(k * Math.min(5, 16 / n)).toFixed(1)}deg;--d:${j * 35}ms;z-index:${n - j}`;
+      return `<span class="file${progress[l.id] ? ' done' : ''}" style="${vars}"></span>`;
+    }).join('');
+    const all = done === n;
+    return `<button class="folder${all ? ' complete' : ''}" data-c="${i}" style="--i:${i}" aria-label="Level ${i + 1}: ${ch.title}. ${done} of ${n} done.">
+      <span class="back"></span><span class="tabno">${all ? '✓' : i + 1}</span>
+      <span class="files">${files}</span>
+      <span class="front"><span class="ttl">${ch.title}</span></span>
     </button>`;
   }).join('');
+  const total = DATA.reduce((t, ch) => t + ch.lines.length, 0);
+  const doneAll = DATA.reduce((t, ch) => t + ch.lines.filter((l) => progress[l.id]).length, 0);
+  const starsAll = DATA.reduce((t, ch) => t + ch.lines.reduce((s, l) => s + (progress[l.id] || 0), 0), 0);
+  $('progText').textContent = `${doneAll} of ${total} lines done`;
+  $('starText').textContent = `★ ${starsAll} / ${total * 3}`;
+  requestAnimationFrame(() => { $('progBar').style.width = `${Math.round(doneAll / total * 100)}%`; });
   const nx = nextUnfinished();
   if (nx) {
     const started = Object.keys(progress).length > 0;
@@ -316,9 +382,11 @@ function showHome() {
 
 $('continue').onclick = () => { const nx = nextUnfinished() || { c: 0, l: 0 }; openLine(nx.c, nx.l); };
 $('levels').onclick = (e) => {
-  const b = e.target.closest('.card'); if (!b) return;
-  const c = +b.dataset.c, l = DATA[c].lines.findIndex((x) => !progress[x.id]);
-  openLine(c, l < 0 ? 0 : l);
+  const b = e.target.closest('.folder'); if (!b || b.classList.contains('opening')) return;
+  const c = +b.dataset.c, first = DATA[c].lines.findIndex((x) => !progress[x.id]), l = first < 0 ? 0 : first;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return openLine(c, l);
+  b.classList.add('opening'); // the folder opens and the sheets lift, then the level starts
+  setTimeout(() => { b.classList.remove('opening'); openLine(c, l); }, 320);
 };
 $('back').onclick = showHome;
 
