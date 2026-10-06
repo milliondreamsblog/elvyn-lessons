@@ -50,14 +50,23 @@
   @media (min-width: 640px) { .levels { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px 26px; } }
   @media (min-width: 900px) and (max-width: 1080px) { .levels { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
-  /* A level is a folder; each line is a sheet of paper inside it. Hover/focus fans the sheets out. */
-  .folder { position: relative; display: block; width: 100%; aspect-ratio: 5 / 4; padding: 0; border: 0; background: none;
+  /* A level is a slate metal folder; each line is a mini chessboard card inside it. Hover/focus fans the cards out. */
+  .folder { --slate-top: #4f5f73; --slate-bot: #3b4757;
+    position: relative; display: block; width: 100%; aspect-ratio: 5 / 4; padding: 0; border: 0; background: none;
     text-align: left; perspective: 900px; -webkit-tap-highlight-color: transparent; outline: none;
     animation: rise .5s cubic-bezier(.2, .9, .25, 1) both; animation-delay: calc(var(--i) * 60ms); }
   @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
-  .folder .back { position: absolute; left: 0; right: 0; top: 10%; bottom: 0; background: #d8c196; border-radius: 6px 14px 14px 14px; }
-  .folder .back::before { content: ""; position: absolute; left: 0; top: -9%; width: 42%; height: 14%; background: #d8c196; border-radius: 10px 12px 0 0; }
-  .folder .tabno { position: absolute; left: 12px; top: 3.5%; font: 700 12px/1 system-ui, sans-serif; color: #6b5330; z-index: 15; transition: opacity .2s ease; }
+  /* Back panel + tab with a sloped shoulder, like a real file folder. */
+  .folder .back { position: absolute; left: 0; right: 0; top: 11%; bottom: 0; border-radius: 4px 14px 14px 14px;
+    background: linear-gradient(180deg, var(--slate-top), var(--slate-bot)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18); }
+  .folder .back::before { content: ""; position: absolute; left: 0; top: -10%; width: 34%; height: 12%; background: var(--slate-top);
+    border-radius: 10px 0 0 0; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18); }
+  .folder .back::after { content: ""; position: absolute; left: 31%; top: -10%; width: 14%; height: 12%; background: var(--slate-top);
+    border-radius: 0 10px 0 0; transform: skewX(34deg); transform-origin: 0 100%; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18); }
+  .folder .tabno { position: absolute; left: 12px; top: 3.6%; z-index: 15; font: 700 11px/1 system-ui, sans-serif; letter-spacing: .06em;
+    color: #dbe3ec; transition: opacity .2s ease; }
+  .folder.complete .tabno { top: 2.4%; left: 9px; width: 18px; height: 18px; border-radius: 50%; background: var(--good); color: #fff;
+    font-size: 11px; line-height: 18px; text-align: center; letter-spacing: 0; box-shadow: 0 0 0 2px rgba(255, 255, 255, .85); }
   .folder:hover .tabno, .folder:focus-visible .tabno, .folder.opening .tabno { opacity: 0; }
   .folder .files { position: absolute; left: 0; right: 0; top: 12%; bottom: 0; }
   /* Each line is a mini chessboard card tucked into the folder, showing the position where that line branches off. */
@@ -68,21 +77,35 @@
   .folder .file svg { display: block; width: 100%; height: 100%; border-radius: 2px; }
   .folder .file.done::after { content: "✓"; position: absolute; top: -7px; right: -7px; width: 20px; height: 20px; border-radius: 50%;
     background: var(--good); color: #fff; font: 700 12px/20px system-ui, sans-serif; text-align: center; box-shadow: 0 0 0 2px #fff; }
+  /* Front panel: brushed slate metal with a bevelled top edge; the title sits on an engraved name plate. */
   .folder .front { position: absolute; left: 0; right: 0; bottom: 0; height: 62%; z-index: 20; display: flex; align-items: flex-end;
-    padding: 14px 16px; border-radius: 12px; background: linear-gradient(180deg, #f5e6c8, #ebd7af);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75), 0 10px 20px -8px rgba(120, 84, 30, .38);
-    transform-origin: 50% 100%; transition: transform .45s cubic-bezier(.2, .9, .25, 1), box-shadow .3s ease; }
-  .folder .ttl { font: 700 clamp(15px, 1.9vw, 19px)/1.2 Georgia, "Times New Roman", serif; color: #3b2a10; }
-  .folder:hover .front, .folder:focus-visible .front { transform: rotateX(-16deg);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75), 0 20px 30px -12px rgba(120, 84, 30, .45); }
+    padding: 12px 14px; border-radius: 9px 9px 14px 14px; overflow: hidden;
+    background: linear-gradient(180deg, #93a3b6 0%, #75869a 34%, #5c6b7e 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .6), inset 0 -10px 18px -10px rgba(15, 23, 42, .45),
+      0 14px 24px -12px rgba(15, 23, 42, .55);
+    transform-origin: 50% 100%; transition: transform .45s cubic-bezier(.2, .9, .25, 1), box-shadow .3s ease, filter .3s ease; }
+  .folder .front::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .045) 0 1px, transparent 1px 3px); }
+  .folder .front::after { content: ""; position: absolute; top: 0; bottom: 0; left: -75%; width: 55%; pointer-events: none;
+    background: linear-gradient(105deg, transparent, rgba(255, 255, 255, .32), transparent); transform: skewX(-14deg);
+    transition: left .8s cubic-bezier(.2, .8, .2, 1); }
+  .folder .ttl { position: relative; z-index: 1; display: inline-block; max-width: 100%; padding: 6px 11px; border-radius: 7px;
+    background: linear-gradient(180deg, #f8fafc, #dfe6ee); border: 1px solid rgba(15, 23, 42, .22);
+    box-shadow: inset 0 1px 0 #fff, 0 1px 2px rgba(15, 23, 42, .35);
+    font: 700 clamp(14px, 1.75vw, 18px)/1.2 Georgia, "Times New Roman", serif; color: #1e293b; }
+  .folder:hover .front, .folder:focus-visible .front { transform: rotateX(-16deg); filter: brightness(1.05);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .6), inset 0 -10px 18px -10px rgba(15, 23, 42, .45),
+      0 22px 32px -14px rgba(15, 23, 42, .6); }
+  .folder:hover .front::after, .folder:focus-visible .front::after { left: 125%; }
   .folder:hover .file, .folder:focus-visible .file { transform: translate(var(--hx), var(--hy)) rotate(var(--hr)); }
   .folder:focus-visible .front { outline: 3px solid var(--amber); outline-offset: 3px; }
   .folder.opening .front { transform: rotateX(-34deg); }
   .folder.opening .file { transform: translate(var(--hx), calc(var(--hy) - 18%)) rotate(var(--hr)); }
-  .folder.complete .back, .folder.complete .back::before { background: #b7d7bf; }
-  .folder.complete .front { background: linear-gradient(180deg, #e7f4ea, #d2e9d8); box-shadow: inset 0 1px 0 rgba(255,255,255,.75), 0 10px 20px -8px rgba(21, 128, 61, .3); }
-  .folder.complete .tabno { color: var(--good); }
-  @media (prefers-reduced-motion: reduce) { .folder, .folder .front, .folder .file, .bar i { animation: none; transition: none; } }
+  /* Finished level: still slate, with a green edge (green only ever means "done"). */
+  .folder.complete .front { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .6), inset 0 -10px 18px -10px rgba(15, 23, 42, .45),
+      inset 0 -4px 0 var(--good), 0 14px 24px -12px rgba(15, 23, 42, .55); }
+  @media (prefers-reduced-motion: reduce) {
+    .folder, .folder .front, .folder .front::after, .folder .file, .bar i { animation: none; transition: none; } }
 
   .side { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--ink); font-size: 12px; font-weight: 600; }
   .side::before { content: ""; width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--ink); }
