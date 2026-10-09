@@ -83,6 +83,12 @@
   .pc.drag { transition: none; z-index: 10; filter: drop-shadow(0 4px 6px rgba(0,0,0,.35)); }
   .pc.gone { opacity: 0; }
   #board.noanim .pc { transition: none; }
+  /* Promotion picker: four pieces in a column on the target file, over a dimmed board. */
+  #promo { position: absolute; inset: 0; z-index: 30; }
+  #promo .pbg { position: absolute; inset: 0; background: rgba(28, 25, 23, .45); border-radius: 6px; }
+  #promo button { position: absolute; width: 12.5%; height: 12.5%; padding: 0; border: 0; border-radius: 50%;
+    background: #fff center / 86% no-repeat; box-shadow: 0 2px 8px rgba(0, 0, 0, .35); transition: transform .12s ease, border-radius .12s ease; }
+  #promo button:hover, #promo button:focus-visible { transform: scale(1.06); border-radius: 14%; background-color: var(--amber-soft); outline: none; }
   #draw { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
 
   #options { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
@@ -181,6 +187,7 @@
     <div class="boardwrap">
       <div id="board" aria-label="Chess board"><div id="sqs"></div><div id="pcs"></div>
         <svg id="draw" viewBox="0 0 8 8" preserveAspectRatio="none" aria-hidden="true"></svg></div>
+      <div id="promo" hidden role="dialog" aria-label="Choose a piece for your pawn"><div class="pbg"></div></div>
     </div>
     <div id="options" hidden></div>
     <div class="tools"><button id="clear" title="Clear drawn arrows (C)">Clear arrows</button><button id="flip" title="Flip board (F)">Flip</button>
@@ -454,6 +461,7 @@ function load(i) {
   S = { step: 0, fen: p.type === 'move' ? p.start : p.fen, last: null, sel: null, hintSq: null, busy: false, solved: false,
         wrong: 0, hinted: false, shown: false, marks: new Set(), goodSqs: new Set(), missSqs: new Set(), k: 0, free: false };
   drawn.arrows = []; drawn.circles = []; specArrows = [];
+  promo = null; $('promo').hidden = true;
   buildSquares(p.orientation === 'black', p.coords !== false);
   $('prompt').innerHTML = promptHtml(p);
   $('hintbox').hidden = true; $('hintbox').textContent = 'Hint: ' + (p.hint || 'no hint for this one.');
@@ -480,15 +488,53 @@ function studentTry(from, to) {
   S.sel = null;
   const cands = st.legal.filter((u) => u.slice(0, 4) === from + to);
   if (!cands.length) { paintSquares(); return false; }
-  let uci = cands[0];
-  if (cands.length > 1) uci = st.accept.find((u) => u.slice(0, 4) === from + to) || cands.find((u) => u[4] === 'q') || cands[0];
-  if (st.accept.includes(uci)) { playStudent(uci); return true; }
+  if (cands.length > 1) { openPromo(from, to, cands); return true; }  // a promotion: the student picks the piece
+  if (st.accept.includes(cands[0])) { playStudent(cands[0]); return true; }
+  wrongMove(from, to);
+  return false;
+}
+function wrongMove(from, to) {
   S.wrong++;
   flashBad(to); flashBad(from); flashBoard();
   say('oops', pick(OOPS));
   maybeShowMe();
   paintSquares();
-  return false;
+}
+let promo = null;  // { from, to, pc } while the picker is open
+function openPromo(from, to, cands) {
+  const white = sideOf(S.fen) === 'w', pc = pieceOn(from);
+  promo = { from, to, pc };
+  if (pc) place(pc.el, to);  // the pawn waits on the last rank while the student chooses
+  const [x, y] = xy(to), dir = y === 0 ? 1 : -1;  // the column grows from the target square toward the middle
+  const box = $('promo');
+  box.querySelectorAll('button').forEach((b) => b.remove());
+  ['q', 'n', 'r', 'b'].filter((l) => cands.includes(from + to + l)).forEach((l, i) => {
+    const b = document.createElement('button');
+    b.dataset.l = l;
+    b.setAttribute('aria-label', { q: 'Queen', n: 'Knight', r: 'Rook', b: 'Bishop' }[l]);
+    b.style.left = (x * 12.5) + '%';
+    b.style.top = ((y + dir * i) * 12.5) + '%';
+    b.style.backgroundImage = `url("${PIECES[white ? l.toUpperCase() : l]}")`;
+    b.onclick = (e) => { e.stopPropagation(); choosePromo(l); };
+    box.appendChild(b);
+  });
+  box.hidden = false;
+  say('talk', 'Which piece should your pawn become?');
+  const first = box.querySelector('button'); if (first) first.focus({ preventScroll: true });
+}
+function closePromo(snapBack) {
+  if (!promo) return;
+  const p = promo; promo = null;
+  $('promo').hidden = true;
+  if (snapBack && p.pc && pieces.includes(p.pc)) place(p.pc.el, p.pc.sq);
+  S.sel = null; paintSquares();
+}
+function choosePromo(l) {
+  if (!promo || !studentTurn()) return;
+  const { from, to } = promo, uci = from + to + l;
+  const ok = curStep().accept.includes(uci);
+  closePromo(!ok);
+  if (ok) playStudent(uci); else wrongMove(from, to);
 }
 function maybeShowMe() { if (S.wrong >= 3) $('showme').hidden = false; }
 function playStudent(uci) {
@@ -540,6 +586,7 @@ function solved() {
 function showMe() {
   const p = P();
   if (S.solved) return;
+  closePromo(true);
   S.shown = true;
   $('showme').hidden = true;
   if (p.type === 'move') {
@@ -765,6 +812,8 @@ boardEl.addEventListener('pointercancel', (e) => endPointer(e, true));
 boardEl.addEventListener('contextmenu', (e) => e.preventDefault());
 
 // ------------------------------------------------------------------ buttons + keys
+$('promo').querySelector('.pbg').addEventListener('pointerdown', (e) => { e.preventDefault(); closePromo(true); });
+document.addEventListener('pointerdown', (e) => { if (promo && !$('promo').contains(e.target)) closePromo(true); }, true);
 $('clear').onclick = clearDrawn;
 $('flip').onclick = flip;
 $('hint').onclick = hint;
@@ -777,6 +826,7 @@ $('creset').onclick = () => load(idx); $('cflip').onclick = flip; $('cclear').on
 $('pip').addEventListener('click', () => { if (!COACH && !S.solved) hint(); });
 $('fAgain').onclick = () => { $('finish').hidden = true; load(0); };
 document.addEventListener('keydown', (e) => {
+  if (promo) { if (e.key === 'Escape') { e.preventDefault(); closePromo(true); } return; }
   if (e.ctrlKey || e.metaKey || e.altKey || /INPUT|TEXTAREA/.test(e.target.tagName)) return;
   const k = e.key;
   if (k === 'c' || k === 'C') { clearDrawn(); return; }
