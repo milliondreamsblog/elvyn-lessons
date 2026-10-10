@@ -35,30 +35,59 @@
   body.mode-coach { --bg: #f4f6fa; }
 
   /* Desktop: everything to read and press on the left (about 40%), the board alone on the right (about 60%). */
-  .layout { max-width: 1480px; margin: 0 auto; padding: 4px 20px 24px; display: grid; grid-template-columns: minmax(320px, 2fr) minmax(0, 3fr);
-    gap: 32px; align-items: start; }
+  .layout { max-width: 1480px; margin: 0 auto; padding: 4px 20px 24px; display: grid; grid-template-columns: 120px minmax(300px, 2fr) minmax(0, 3fr);
+    gap: 28px; align-items: start; }
   .info { display: flex; flex-direction: column; gap: 14px; min-width: 0; container: info / inline-size; }
   .boardcol { display: flex; justify-content: center; min-width: 0; }
 
-  /* Level chips: "1 · L1" pills tinted by level, so the climb from easy to hard shows at a glance. */
-  #dots { display: grid; grid-template-columns: repeat(5, max-content); gap: 8px; padding: 3px; }
-  @container info (min-width: 720px) { #dots { grid-template-columns: repeat(10, max-content); } }
-  .chip { display: inline-flex; align-items: center; height: 34px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--cb);
-    background: var(--cbg); color: var(--cfg); font: 600 13.5px/1 var(--sans); font-variant-numeric: tabular-nums; white-space: nowrap;
-    transition: transform .15s ease, box-shadow .15s ease; }
-  .chip b { font-weight: 800; } .chip .sep { opacity: .55; white-space: pre; }
-  .chip .ok { margin-left: 5px; font-size: 13px; }
-  .chip:hover:not(:disabled) { transform: translateY(-1px); }
-  .chip:disabled { cursor: default; }
-  .chip.lv1 { --cbg: #e6f6ea; --cb: #a7dcb5; --cfg: #166534; }
-  .chip.lv2 { --cbg: #e0f4f1; --cb: #99d8ce; --cfg: #115e59; }
-  .chip.lv3 { --cbg: #fdf3d7; --cb: #f1cf7a; --cfg: #8a4b0b; }
-  .chip.lv4 { --cbg: #fde9d8; --cb: #f5b583; --cfg: #9a3412; }
-  .chip.lv5 { --cbg: #fce4e4; --cb: #f2a7a7; --cfg: #991b1b; }
-  .chip.ans { --cbg: #eeedeb; --cb: #d6d3d1; --cfg: #57534e; }
-  .chip.x { --cbg: #fee2e2; --cb: #f87171; --cfg: #b91c1c; }
-  .chip.s1 .ok, .chip.s2 .ok, .chip.s3 .ok { color: #d97706; }
-  .chip.on { border-width: 2.5px; border-color: var(--cfg); box-shadow: 0 0 0 3px var(--cbg), 0 0 0 4.5px var(--cb); }
+  /* Island path: one island per puzzle in a straight line, top to bottom. Islands stay black and white until
+     solved, then pop into the level's colour (L1 green ... L5 red), so the colours climb as the student goes. */
+  .rail { --slot: clamp(44px, calc((100vh - 96px) / 10), 84px); --slot: clamp(44px, calc((100dvh - 96px) / 10), 84px);
+    display: flex; flex-direction: column; align-items: center; padding-top: 8px; position: sticky; top: 6px; }
+  .isl { position: relative; flex: none; width: 112px; height: var(--slot); padding: 0; border: 0; background: none;
+    display: flex; flex-direction: column; align-items: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .isl:disabled { cursor: default; }
+  .isl:focus-visible { outline: none; } .isl:focus-visible .iw { outline: 3px solid var(--amber); outline-offset: 2px; border-radius: 12px; }
+  .isl .iw { position: relative; z-index: 1; display: block; height: calc(var(--slot) - 15px); aspect-ratio: 100 / 64; }
+  .isl .land { display: block; width: 100%; height: 100%; overflow: visible; filter: grayscale(1); opacity: .5; transition: filter .35s ease, opacity .35s ease; }
+  .isl .sea { fill: #bae6fd; } .isl .sand { fill: #f2d48a; stroke: #c9a04a; stroke-width: 2; }
+  .isl .grass { fill: var(--g); stroke: var(--gd); stroke-width: 2; }
+  .isl .pole { stroke: #6b4f3a; stroke-width: 2.6; stroke-linecap: round; } .isl .flag { fill: var(--flag); }
+  .isl .trunk { stroke: #8b5a2b; stroke-width: 2.6; fill: none; stroke-linecap: round; }
+  .isl .leaf { stroke: #22a35a; stroke-width: 3.2; fill: none; stroke-linecap: round; }
+  .isl.lv1 { --g: #6fd99a; --gd: #1f9d55; --flag: #16a34a; }
+  .isl.lv2 { --g: #5ad1c2; --gd: #0f8f84; --flag: #0f766e; }
+  .isl.lv3 { --g: #fcd25c; --gd: #d99a0b; --flag: #d97706; }
+  .isl.lv4 { --g: #fdab6d; --gd: #e8650f; --flag: #c2410c; }
+  .isl.lv5 { --g: #f99191; --gd: #dc3a3a; --flag: #b91c1c; }
+  .isl.ans { --g: #fcd34d; --gd: #d97706; --flag: #d97706; }
+  .isl.lit .land { filter: none; opacity: 1; }
+  .isl .n { position: absolute; left: 47%; top: 57%; transform: translate(-50%, -50%); min-width: 1.75em; height: 1.75em; padding: 0 .3em;
+    border-radius: 999px; background: #fff; color: var(--ink); font: 800 clamp(10px, calc(var(--slot) * .19), 15px)/1.75em var(--round);
+    text-align: center; box-shadow: 0 1px 3px rgba(0, 0, 0, .3); }
+  .isl:not(.lit) .n { color: #78716c; }
+  .isl .lv { position: absolute; right: -12px; top: 24%; padding: 2px 5px; border-radius: 999px; background: #e7e5e4; color: #78716c;
+    font: 700 9.5px/1.2 var(--sans); }
+  .isl.lit .lv { background: var(--gd); color: #fff; }
+  .isl.ans .lv { background: #e7e5e4; color: #78716c; }
+  .isl .st { position: relative; z-index: 1; height: 13px; font-size: 11px; line-height: 13px; letter-spacing: 1px; color: #f59e0b; white-space: nowrap; }
+  .isl .st .off { color: #d6d3d1; }
+  .isl .mk { position: absolute; right: 2%; top: 4%; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--good); color: #fff; font: 800 11px/1 var(--sans); box-shadow: 0 0 0 2px #fff; }
+  .isl.x .mk { background: var(--bad); }
+  /* The trail: dotted grey, amber once both ends are solved. */
+  .isl .trail { position: absolute; z-index: 0; left: 50%; top: calc((var(--slot) - 15px) * .62); height: var(--slot); margin-left: -1.5px;
+    border-left: 3px dotted #d6d3d1; }
+  .isl.link .trail { margin-left: -2px; border-left: 4px dotted #f59e0b; }
+  /* The current puzzle: amber ring, a gentle bob and Pip standing on the island. */
+  .isl.on .iw { animation: bob 2.4s ease-in-out infinite; }
+  .isl.on .iw::after { content: ""; position: absolute; left: -6%; right: -6%; top: 22%; bottom: -10%; border-radius: 50%;
+    border: 3px solid var(--amber); box-shadow: 0 0 12px rgba(245, 158, 11, .6); pointer-events: none; }
+  .isl .me { position: absolute; left: 12%; top: 1%; width: 30%; height: auto; overflow: visible; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .25)); }
+  .isl.pop .iw { animation: islpop .55s cubic-bezier(.3, 1.6, .5, 1); }
+  .isl.on.pop .iw { animation: islpop .55s cubic-bezier(.3, 1.6, .5, 1), bob 2.4s ease-in-out .55s infinite; }
+  @keyframes islpop { 0% { transform: scale(.6); } 60% { transform: scale(1.16); } 100% { transform: scale(1); } }
+  @media (prefers-reduced-motion: reduce) { .isl .iw { animation: none !important; } .isl .land { transition: none; } }
 
   /* Pip asks the question; feedback goes in a second bubble right under it, so kids read one place. */
   .talk { display: flex; align-items: flex-start; gap: 12px; }
@@ -74,8 +103,8 @@
   .ask .side { display: inline-block; margin-right: 8px; vertical-align: 1px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--ink); }
   .ask .side.w { background: #fff; } .ask .side.b { background: var(--ink); }
   .say { font: 400 16px/1.45 var(--sans); }
-  .say.oops { background: #fff6f5; border-color: #fecaca; }
-  .say.happy, .say.cheer { background: #f2fbf4; border-color: #bbf7d0; }
+  .say.m-oops { background: #fff6f5; border-color: #fecaca; }
+  .say.m-happy, .say.m-cheer { background: #f2fbf4; border-color: #bbf7d0; }
   .say .mv { display: block; font: 600 18px/1.25 var(--sans); letter-spacing: -.02em; margin-bottom: 3px; font-variant-numeric: tabular-nums; }
   .say .stars { color: var(--amber); letter-spacing: 3px; } .say .stars .off { color: #e7e5e4; }
   .bubble.pop { animation: pop .32s cubic-bezier(.2, 1.4, .4, 1); }
@@ -194,7 +223,7 @@
     .frame.wobble, .pc.hop::before, .sq.mark::after, .sq.hint::after { animation: none; }
     #fx { display: none; } }
 
-  /* Phones: chips (scrolling sideways), Pip and the question, the board full width, then buttons and help. */
+  /* Phones: islands in a sideways row, Pip and the question, the board full width, then buttons and help. */
   @media (max-width: 760px) {
     :root { --fw: 18px; }
     .topbar { padding: 8px 10px 4px; gap: 8px; }
@@ -205,9 +234,15 @@
     .info { display: contents; }
     #modebar { order: 0; } #dots { order: 1; } .talk { order: 2; } .boardcol { order: 3; } #options { order: 4; }
     #hintbox, #moves { order: 5; } .btns { order: 6; } .tools, .keys, .checkpoint { order: 7; }
-    #dots { display: flex; overflow-x: auto; scrollbar-width: none; margin: 0 -8px; padding: 4px 10px; }
-    #dots::-webkit-scrollbar { display: none; }
-    .chip { flex: none; height: 30px; padding: 0 10px; font-size: 12.5px; }
+    .rail { --slot: 54px; flex-direction: row; align-items: flex-start; position: static; overflow-x: auto; overflow-y: hidden;
+      scrollbar-width: none; margin: 0 -8px; padding: 10px 12px 0; }
+    .rail::-webkit-scrollbar { display: none; }
+    .isl { width: 68px; height: auto; }
+    .isl .iw { height: 38px; }
+    .isl .n { font-size: 11px; }
+    .isl .lv { right: -6px; top: -6px; font-size: 9px; }
+    .isl .trail { top: 23px; left: 50%; width: 68px; height: 0; margin: 0; border-left: 0; border-top: 3px dotted #d6d3d1; }
+    .isl.link .trail { margin: 0; border-left: 0; border-top: 4px dotted #f59e0b; }
     .talk { gap: 8px; } .talk .pip { width: 50px; height: 62px; }
     .bubble { padding: 9px 12px 10px; border-radius: 14px; }
     .bubble.ask::before { top: 22px; }
@@ -243,10 +278,6 @@
   #timer { padding: 7px 13px; border-radius: 999px; background: #111; color: #fff; font: 600 15px/1 var(--sans); font-variant-numeric: tabular-nums; }
   #modebar { max-width: 1120px; margin: 0 auto 4px; padding: 0 16px; font-size: 13.5px; color: var(--muted); }
   #modebar b { color: var(--ink); } #modebar a { color: var(--amber-deep); font-weight: 600; }
-  #dots button.ans { background: #e7e5e4; border-color: #d6d3d1; }
-  #dots button.x { background: #fee2e2; border-color: #fca5a5; color: var(--bad); }
-  #dots button:disabled { cursor: default; color: var(--ink); opacity: 1; }
-  #dots button.s3:disabled { color: #fff; } #dots button.x:disabled { color: var(--bad); }
   #options button.picked { border-color: var(--navy); background: #eef2f7; }
   /* The test result card is made to be screenshotted and sent to the coach. */
   .rc { width: min(94vw, 440px); background: #fff; border-radius: 22px; border: 1px solid var(--line); overflow: hidden;
@@ -285,9 +316,9 @@
   <a class="logo" href="../../index.html" aria-label="Elvyn Chess puzzles home"><img src="data:image/png;base64,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" alt="Elvyn" onerror="this.replaceWith('Elvyn')"></a>
 </header>
 <main class="layout">
+  <nav class="rail" id="dots" aria-label="Puzzles"></nav>
   <section class="info">
     <div id="modebar" hidden></div>
-    <nav id="dots" aria-label="Puzzles"></nav>
     <div class="talk">
       <svg class="pip" id="pip" viewBox="0 0 120 150" role="img" aria-label="Pip the pawn"></svg>
       <div class="bubbles">
@@ -428,7 +459,7 @@ function say(m, text, extraHtml) {
   const b = $('say');
   if (!text && !extraHtml) { b.hidden = true; return; }
   b.hidden = false;
-  b.className = 'bubble say ' + (m || 'talk');
+  b.className = 'bubble say m-' + (m || 'talk');  // m- prefix: .talk is the Pip row
   b.innerHTML = `${COACH ? '<span class="who">Coach notes</span>' : ''}${extraHtml || ''}${esc(text)}`;
   b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
 }
@@ -622,23 +653,44 @@ function promptHtml(p) {
   return side + esc(p.prompt);
 }
 
-function chipHtml(p, i, cls, mark, disabled) {
-  const lv = Math.max(1, Math.min(5, p.level || 1));
-  return `<button class="chip lv${lv}${i === idx ? ' on' : ''}${cls ? ' ' + cls : ''}" data-i="${i}"${disabled ? ' disabled' : ''} ` +
-    `title="Puzzle ${i + 1} · level ${p.level}"><b>${i + 1}</b><span class="sep"> · </span>L${p.level}${mark ? `<span class="ok">${mark}</span>` : ''}</button>`;
-}
+// One small inline SVG island per puzzle: sea, sand, grass, a palm and a flag (grass and flag take the level colour).
+const ISLAND = '<svg class="land" viewBox="0 0 100 64" aria-hidden="true">' +
+  '<ellipse class="sea" cx="50" cy="56" rx="47" ry="7"/>' +
+  '<path class="sand" d="M7 41C7 27 26 21 50 21C75 21 93 28 93 41C93 53 74 58 50 58C26 58 7 53 7 41Z"/>' +
+  '<path class="grass" d="M15 37C15 28 30 24 50 24C70 24 85 29 85 37C85 44 70 47 50 47C30 47 15 44 15 37Z"/>' +
+  '<path class="pole" d="M73 37V7"/><path class="flag" d="M74.5 8L91 13L74.5 18Z"/>' +
+  '<path class="trunk" d="M25 37C25 30 24 24 21 18"/>' +
+  '<path class="leaf" d="M21 18C15 15 11 17 9 21M21 18C23 12 28 11 32 13M21 18C17 11 12 10 8 12"/></svg>';
+const PIP_HEAD = '<svg class="me" viewBox="22 8 76 76" aria-hidden="true"><circle cx="60" cy="46" r="33" fill="url(#pipG)" stroke="#1f2a44" stroke-width="5"/>' +
+  '<ellipse cx="47" cy="45" rx="6" ry="7.5" fill="#1f2a44"/><ellipse cx="73" cy="45" rx="6" ry="7.5" fill="#1f2a44"/>' +
+  '<circle cx="49" cy="42" r="2.3" fill="#fff"/><circle cx="75" cy="42" r="2.3" fill="#fff"/>' +
+  '<path d="M50 58Q60 68 70 58" fill="none" stroke="#1f2a44" stroke-width="4" stroke-linecap="round"/></svg>';
+let litBefore = null;  // islands already in colour at the last render; only newly coloured ones pop
 function renderDots() {
-  const m = mine(), box = $('dots');
-  box.innerHTML = T.puzzles.map((p, i) => {
-    if (STRICT) {  // no jumping around; a test only shows which questions are answered
+  const m = mine(), box = $('dots'), N = T.puzzles.length;
+  const info = T.puzzles.map((p, i) => {
+    const lv = Math.max(1, Math.min(5, p.level || 1));
+    if (STRICT) {  // a test never shows right or wrong: answered islands turn plain amber; a speed drill shows ✓ / ✗
       const r = run ? run.results[i] : undefined;
-      return chipHtml(p, i, r === undefined ? '' : TEST ? 'ans' : (r ? 's3' : 'x'), r === undefined || TEST ? '' : (r ? '✓' : '✗'), true);
+      return { lv, lit: r !== undefined, cls: r === undefined ? '' : TEST ? 'ans' : (r ? 's3' : 'x'), mark: r === undefined || TEST ? '' : (r ? '✓' : '✗'), stars: 0 };
     }
     const st = COACH ? 0 : (m[p.id] || 0);
-    return chipHtml(p, i, st ? 's' + st : '', st ? '★' : '', false);
+    return { lv, lit: COACH || st > 0, cls: st ? 's' + st : '', mark: '', stars: st };
+  });
+  box.innerHTML = info.map((x, i) => {
+    const p = T.puzzles[i];
+    const cls = ['isl', 'lv' + x.lv, x.cls, x.lit ? 'lit' : '', i === idx ? 'on' : '',
+      x.lit && i < N - 1 && info[i + 1].lit ? 'link' : '', x.lit && litBefore && !litBefore.has(i) ? 'pop' : ''].filter(Boolean).join(' ');
+    const label = `${STRICT ? 'Question' : 'Puzzle'} ${i + 1}, level ${p.level}${x.stars ? `, ${x.stars} of 3 stars` : ''}`;
+    const stars = x.stars ? `${'★'.repeat(x.stars)}<span class="off">${'★'.repeat(3 - x.stars)}</span>` : '';
+    return `<button class="${cls}" data-i="${i}"${STRICT ? ' disabled' : ''} aria-label="${label}" title="${label}">` +
+      (i < N - 1 ? '<span class="trail"></span>' : '') +
+      `<span class="iw">${ISLAND}<b class="n">${i + 1}</b><span class="lv">L${p.level}</span>` +
+      (x.mark ? `<span class="mk">${x.mark}</span>` : '') + (i === idx ? PIP_HEAD : '') + `</span><span class="st">${stars}</span></button>`;
   }).join('');
+  litBefore = new Set(info.map((x, i) => (x.lit ? i : -1)).filter((i) => i >= 0));
   if (!STRICT) box.querySelectorAll('button').forEach((b) => { b.onclick = () => load(+b.dataset.i); });
-  const on = box.querySelector('.on');  // phones: keep the current chip in view
+  const on = box.querySelector('.on');  // phones: the row scrolls sideways; keep the current island in view
   if (on && box.scrollWidth > box.clientWidth) {
     const a = box.getBoundingClientRect(), c = on.getBoundingClientRect();
     box.scrollLeft += c.left - a.left - (a.width - c.width) / 2;
