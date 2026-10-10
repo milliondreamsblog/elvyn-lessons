@@ -77,6 +77,22 @@
   .folder.soon .meta { font-style: italic; font-weight: 500; }
   body.mode-coach .folder { --slate-top: #1f2a44; }
   body.mode-coach .folder .body { background: linear-gradient(180deg, #4b5d7e 0%, #34445f 45%, #26324a 100%); }
+  /* In-class topics: a slate folder with an amber "In class" tag. */
+  .folder.inclass .body { background: linear-gradient(180deg, #a3afbf 0%, #8392a5 40%, #6b7a8e 100%); }
+  .folder.inclass .meta > span:first-child { padding: 3px 10px; border-radius: 999px; background: var(--amber); color: #fff; }
+  .folder.test .meta > span:first-child { padding: 3px 10px; border-radius: 999px; background: rgba(15, 23, 42, .45); }
+  .meta .best { color: #fde68a; } .meta .best.pass { color: #bbf7d0; }
+  /* In-class page: what happens in the class, plus (Targeted Revision) links to every earlier topic. */
+  .card { max-width: 640px; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--amber); border-radius: 14px; padding: 16px 20px;
+    box-shadow: 0 18px 34px -24px rgba(31, 42, 68, .45); }
+  .card h2 { margin: 0 0 8px; font: 600 18px/1.3 var(--sans); letter-spacing: -.02em; }
+  .card ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+  .links { margin-top: 26px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px 24px; }
+  .links h3 { margin: 0 0 6px; font: 600 13px/1.3 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .links ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+  .links a, .links span { display: block; padding: 5px 10px; border-radius: 8px; font-size: 15px; text-decoration: none; }
+  .links a { background: #fff; border: 1px solid var(--line); } .links a:hover { border-color: var(--amber); }
+  .links span { color: #a8a29e; }
   footer { margin-top: 36px; font-size: 12.5px; color: var(--muted); text-align: center; }
 </style>
 </head>
@@ -92,11 +108,13 @@
     <span class="coachtag">Coach</span>
   </header>
   <div class="talkrow"><svg class="pip" id="pip" viewBox="0 0 120 150" role="img" aria-label="Pip the pawn"></svg><div class="bubble" id="say"></div></div>
+  <section class="card" id="card" hidden></section>
+  <section class="links" id="links" hidden></section>
   <div class="grid" id="grid"></div>
   <footer id="foot">Elvyn Chess · Beginner Mastery Program</footer>
 </div>
 <script>
-const PAGE = {"mode": "student", "kind": "home", "heading": "Puzzle Practice", "up": null, "crumb": "Beginner Mastery Program", "items": [{"href": "eb1/index.html", "tab": "EB1", "title": "The Battlefield & Meet Your Army", "tag": "", "sub": "ECB-T1 · Legal Moves & Coordinates", "meta": "10 of 10 topics ready", "soon": false, "keys": {"eb1/01-battlefield-coordinates": 10, "eb1/02-meet-the-army-linear": 10, "eb1/03-meet-the-army-tricky": 10, "eb1/04-capturing-piece-values": 10, "eb1/05-movement-safe-capture": 10, "eb1/06-mini-games": 10, "eb1/07-capturing-medium": 10, "eb1/08-coach-vs-student": 10, "eb1/09-game-review": 10, "eb1/10-test-ecb-t1": 10}}, {"href": "eb2/index.html", "tab": "EB2", "title": "Rules of Combat & King Safety", "tag": "", "sub": "ECB-T2 · Checks, Defense & Special Moves", "meta": "10 of 10 topics ready", "soon": false, "keys": {"eb2/01-attacking-defending": 10, "eb2/02-king-in-danger": 10, "eb2/03-defending-from-check": 10, "eb2/04-special-moves": 10, "eb2/05-attack-defense-medium": 10, "eb2/06-castle-first-game": 10, "eb2/07-castling-legality": 10, "eb2/08-coach-vs-student": 10, "eb2/09-threat-awareness": 10, "eb2/10-test-ecb-t2": 10}}, {"href": "eb3/index.html", "tab": "EB3", "title": "The Ultimate Goal: Checkmate", "tag": "", "sub": "ECB-T3 · Checkmates & Stalemate", "meta": "10 of 10 topics ready", "soon": false, "keys": {"eb3/01-checkmate-vs-stalemate": 10, "eb3/02-basic-endgames-1": 10, "eb3/03-stalemate-avoidance": 10, "eb3/04-basic-endgames-2": 10, "eb3/05-checkmate-in-1": 10, "eb3/06-endgame-sparring": 10, "eb3/07-piece-maneuvering": 10, "eb3/08-coach-vs-student": 10, "eb3/09-execution-speed": 10, "eb3/10-test-ecb-t3": 10}}, {"href": "eb4/index.html", "tab": "EB4", "title": "Basic Tactics: The First Weapons", "tag": "", "sub": "ECB-T4 · Basic Tactics Mastery", "meta": "10 of 10 topics ready", "soon": false, "keys": {"eb4/01-the-pin": 10, "eb4/02-pin-exploitation": 10, "eb4/03-the-fork": 10, "eb4/04-fork-identification": 10, "eb4/05-the-skewer": 10, "eb4/06-mixed-tactical-rush": 10, "eb4/07-tactical-sparring": 10, "eb4/08-coach-vs-student": 10, "eb4/09-missed-opportunities": 10, "eb4/10-test-ecb-t4": 10}}], "say": "Hi, I'm Pip! Pick a block, then a topic. Every topic has 10 puzzles. Can you get all the stars?"};
+const PAGE = {"mode": "student", "kind": "home", "heading": "Puzzle Practice", "up": null, "crumb": "Beginner Mastery Program", "items": [{"href": "eb1/index.html", "tab": "EB1", "title": "The Battlefield & Meet Your Army", "tag": "", "sub": "ECB-T1 · Legal Moves & Coordinates", "meta": "10 of 10 topics ready", "soon": false, "keys": {"eb1/01-battlefield-coordinates": 10, "eb1/02-meet-the-army-linear": 10, "eb1/03-meet-the-army-tricky": 10, "eb1/04-capturing-piece-values": 10, "eb1/05-movement-safe-capture": 10, "eb1/06-mini-games": 10, "eb1/07-capturing-medium": 10, "eb1/08-coach-vs-student": 10, "eb1/09-game-review": 10, "eb1/10-test-ecb-t1": 10}}, {"href": "eb2/index.html", "tab": "EB2", "title": "Rules of Combat & King Safety", "tag": "", "sub": "ECB-T2 · Checks, Defense & Special Moves", "meta": "10 of 10 topics ready", "soon": false, "keys": {"eb2/01-attacking-defending": 10, "eb2/02-king-in-danger": 10, "eb2/03-defending-from-check": 10, "eb2/04-special-moves": 10, "eb2/05-attack-defense-medium": 10, "eb2/06-castle-first-game": 10, "eb2/07-castling-legality": 10, "eb2/08-coach-vs-student": 10, "eb2/09-threat-awareness": 10, "eb2/10-test-ecb-t2": 10}}, {"href": "eb3/index.html", "tab": "EB3", "title": "The Ultimate Goal: Checkmate", "tag": "", "sub": "ECB-T3 · Checkmates & Stalemate", "meta": "10 of 10 topics ready", "soon": false, "keys": {"eb3/01-checkmate-vs-stalemate": 10, "eb3/02-basic-endgames-1": 10, "eb3/03-stalemate-avoidance": 10, "eb3/04-basic-endgames-2": 10, "eb3/05-checkmate-in-1": 10, "eb3/06-endgame-sparring": 10, "eb3/07-piece-maneuvering": 10, "eb3/08-coach-vs-student": 10, "eb3/09-execution-speed": 10, "eb3/10-test-ecb-t3": 10}}, {"href": "eb4/index.html", "tab": "EB4", "title": "Basic Tactics: The First Weapons", "tag": "", "sub": "ECB-T4 · Basic Tactics Mastery", "meta": "10 of 10 topics ready", "soon": false, "keys": {"eb4/01-the-pin": 10, "eb4/02-pin-exploitation": 10, "eb4/03-the-fork": 10, "eb4/04-fork-identification": 10, "eb4/05-the-skewer": 10, "eb4/06-mixed-tactical-rush": 10, "eb4/07-tactical-sparring": 10, "eb4/08-coach-vs-student": 10, "eb4/09-missed-opportunities": 10, "eb4/10-test-ecb-t4": 10}}, {"href": "eb5/index.html", "tab": "EB5", "title": "Opening Fundamentals", "tag": "", "sub": "ECB-T5 · Opening Principles & Defense", "meta": "10 of 10 topics ready", "soon": false, "keys": {"eb5/01-three-golden-rules": 10, "eb5/02-quick-traps": 10, "eb5/03-opening-setup-white": 10, "eb5/04-opening-setup-black": 10, "eb5/05-opening-blunders": 10, "eb5/06-first-10-moves-drill": 10, "eb5/07-coach-vs-student": 10, "eb5/08-center-control": 10, "eb5/09-mixed-revision": 10, "eb5/10-test-ecb-t5": 10}}, {"href": "eb6/index.html", "tab": "EB6", "title": "Consolidation & Grand Test Prep", "tag": "", "sub": "EC-GT1 · Grand Test (100 marks)", "meta": "10 of 10 topics ready", "soon": false, "keys": {"eb6/01-board-vision-qa": 10, "eb6/02-advanced-tactics": 10, "eb6/08-confidence-builder": 10, "eb6/10-grand-test-ec-gt1": 10}}], "say": "Hi, I'm Pip! Pick a block, then a topic. Every topic has 10 puzzles. Can you get all the stars?"};
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const PIP = `
@@ -139,13 +157,31 @@ function starsFor(keys) {
 
 $('eyebrow').textContent = PAGE.crumb || '';
 $('h1').textContent = PAGE.heading;
-if (PAGE.up) { $('up').hidden = false; $('up').href = PAGE.up; $('up').textContent = '← All blocks'; }
+if (PAGE.up) { $('up').hidden = false; $('up').href = PAGE.up; $('up').textContent = PAGE.upLabel || '← All blocks'; }
+if (PAGE.card) {
+  $('card').hidden = false;
+  $('card').innerHTML = `<h2>${esc(PAGE.card.title)}</h2><ul>${PAGE.card.points.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`;
+}
+if (PAGE.links && PAGE.links.length) {
+  $('links').hidden = false;
+  $('links').innerHTML = PAGE.links.map((g) => `<div><h3>${esc(g.label)}</h3><ol>${g.links.map((l) =>
+    l.href ? `<li><a href="${esc(l.href)}">${esc(l.label)}</a></li>` : `<li><span>${esc(l.label)} · coming soon</span></li>`).join('')}</ol></div>`).join('');
+}
+let tests = {};
+try { tests = JSON.parse(localStorage.getItem('elvyn-eb-tests-v1') || '{}') || {}; } catch (_) { tests = {}; }
+function bestTest(key) {
+  const done = (tests[key] || []).filter((a) => a && a.done);
+  if (!done.length) return '';
+  const b = done.reduce((x, y) => (y.marks > x.marks ? y : x));
+  return `<span class="best${b.pass ? ' pass' : ''}">Best ${b.marks}/100${b.pass ? ' ✓' : ''}</span>`;
+}
 let totalGot = 0, totalMax = 0;
 $('grid').innerHTML = PAGE.items.map((it, i) => {
   const st = starsFor(it.keys || {});
   totalGot += st.got; totalMax += st.max;
-  const stars = showStars && st.max ? `<span class="stars">★ ${st.got} / ${st.max}</span>` : '';
-  const cls = `folder${it.soon ? ' soon' : ''}${showStars && st.max && st.got === st.max ? ' done' : ''}`;
+  const best = showStars && it.testKey ? bestTest(it.testKey) : '';
+  const stars = best || (showStars && st.max && !it.testKey ? `<span class="stars">★ ${st.got} / ${st.max}</span>` : '');
+  const cls = `folder${it.soon ? ' soon' : ''}${it.state ? ' ' + it.state : ''}${showStars && st.max && st.got === st.max ? ' done' : ''}`;
   const inner = `<span class="tab">${esc(it.tab)}</span><div class="body">
       ${it.tag ? `<span class="tag">${esc(it.tag)}</span>` : ''}
       <span class="plate">${esc(it.title)}</span>

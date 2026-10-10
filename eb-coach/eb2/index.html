@@ -77,6 +77,22 @@
   .folder.soon .meta { font-style: italic; font-weight: 500; }
   body.mode-coach .folder { --slate-top: #1f2a44; }
   body.mode-coach .folder .body { background: linear-gradient(180deg, #4b5d7e 0%, #34445f 45%, #26324a 100%); }
+  /* In-class topics: a slate folder with an amber "In class" tag. */
+  .folder.inclass .body { background: linear-gradient(180deg, #a3afbf 0%, #8392a5 40%, #6b7a8e 100%); }
+  .folder.inclass .meta > span:first-child { padding: 3px 10px; border-radius: 999px; background: var(--amber); color: #fff; }
+  .folder.test .meta > span:first-child { padding: 3px 10px; border-radius: 999px; background: rgba(15, 23, 42, .45); }
+  .meta .best { color: #fde68a; } .meta .best.pass { color: #bbf7d0; }
+  /* In-class page: what happens in the class, plus (Targeted Revision) links to every earlier topic. */
+  .card { max-width: 640px; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--amber); border-radius: 14px; padding: 16px 20px;
+    box-shadow: 0 18px 34px -24px rgba(31, 42, 68, .45); }
+  .card h2 { margin: 0 0 8px; font: 600 18px/1.3 var(--sans); letter-spacing: -.02em; }
+  .card ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+  .links { margin-top: 26px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px 24px; }
+  .links h3 { margin: 0 0 6px; font: 600 13px/1.3 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .links ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+  .links a, .links span { display: block; padding: 5px 10px; border-radius: 8px; font-size: 15px; text-decoration: none; }
+  .links a { background: #fff; border: 1px solid var(--line); } .links a:hover { border-color: var(--amber); }
+  .links span { color: #a8a29e; }
   footer { margin-top: 36px; font-size: 12.5px; color: var(--muted); text-align: center; }
 </style>
 </head>
@@ -92,11 +108,13 @@
     <span class="coachtag">Coach</span>
   </header>
   <div class="talkrow"><svg class="pip" id="pip" viewBox="0 0 120 150" role="img" aria-label="Pip the pawn"></svg><div class="bubble" id="say"></div></div>
+  <section class="card" id="card" hidden></section>
+  <section class="links" id="links" hidden></section>
   <div class="grid" id="grid"></div>
   <footer id="foot">Elvyn Chess · Beginner Mastery Program</footer>
 </div>
 <script>
-const PAGE = {"mode": "coach", "kind": "block", "heading": "EB2 · Rules of Combat & King Safety", "up": "../index.html", "crumb": "ECB-T2 · Checks, Defense & Special Moves", "items": [{"href": "01-attacking-defending/index.html", "tab": "01", "title": "Attacking & Defending", "tag": "Theory", "sub": "Create direct threats; recognize unsafe squares.", "meta": "10 puzzles", "soon": false, "keys": {"eb2/01-attacking-defending": 10}}, {"href": "02-king-in-danger/index.html", "tab": "02", "title": "The King in Danger", "tag": "Theory", "sub": "Identify 'Check' and apply CPR (Capture, Protect, Run).", "meta": "10 puzzles", "soon": false, "keys": {"eb2/02-king-in-danger": 10}}, {"href": "03-defending-from-check/index.html", "tab": "03", "title": "Defending from Check", "tag": "Puzzle", "sub": "Find the optimal escape route from forced checks.", "meta": "10 puzzles", "soon": false, "keys": {"eb2/03-defending-from-check": 10}}, {"href": "04-special-moves/index.html", "tab": "04", "title": "Special Moves", "tag": "Theory", "sub": "Castling mechanics, En Passant, Pawn Promotion.", "meta": "10 puzzles", "soon": false, "keys": {"eb2/04-special-moves": 10}}, {"href": "05-attack-defense-medium/index.html", "tab": "05", "title": "Attack & Defense (Medium)", "tag": "Puzzle", "sub": "Calculate multiple attackers vs. defenders.", "meta": "10 puzzles", "soon": false, "keys": {"eb2/05-attack-defense-medium": 10}}, {"href": "06-castle-first-game/index.html", "tab": "06", "title": "The 'Castle First' Game", "tag": "Playing", "sub": "Strict rule: no attacks allowed until castled.", "meta": "10 puzzles", "soon": false, "keys": {"eb2/06-castle-first-game": 10}}, {"href": "07-castling-legality/index.html", "tab": "07", "title": "Castling Legality", "tag": "Puzzle", "sub": "Identify if castling is legal in complex scenarios.", "meta": "10 puzzles", "soon": false, "keys": {"eb2/07-castling-legality": 10}}, {"href": "08-coach-vs-student/index.html", "tab": "08", "title": "Coach vs. Student", "tag": "Playing", "sub": "Full game with aggressive checks from the coach.", "meta": "10 puzzles", "soon": false, "keys": {"eb2/08-coach-vs-student": 10}}, {"href": "09-threat-awareness/index.html", "tab": "09", "title": "Threat Awareness", "tag": "Analysis", "sub": "Review game to expose ignored enemy threats.", "meta": "10 puzzles", "soon": false, "keys": {"eb2/09-threat-awareness": 10}}, {"href": "10-test-ecb-t2/index.html", "tab": "10", "title": "ECB-T2", "tag": "Test", "sub": "Checks, Defense & Special Moves (min 75% required).", "meta": "10 puzzles", "soon": false, "keys": {"eb2/10-test-ecb-t2": 10}}], "say": "EB2: Rules of Combat & King Safety. Each folder is one class topic."};
+const PAGE = {"mode": "coach", "kind": "block", "heading": "EB2 · Rules of Combat & King Safety", "up": "../index.html", "crumb": "ECB-T2 · Checks, Defense & Special Moves", "items": [{"href": "01-attacking-defending/index.html", "tab": "01", "title": "Attacking & Defending", "tag": "Theory", "sub": "Create direct threats; recognize unsafe squares.", "meta": "10 puzzles", "soon": false, "state": "", "testKey": null, "keys": {"eb2/01-attacking-defending": 10}}, {"href": "02-king-in-danger/index.html", "tab": "02", "title": "The King in Danger", "tag": "Theory", "sub": "Identify 'Check' and apply CPR (Capture, Protect, Run).", "meta": "10 puzzles", "soon": false, "state": "", "testKey": null, "keys": {"eb2/02-king-in-danger": 10}}, {"href": "03-defending-from-check/index.html", "tab": "03", "title": "Defending from Check", "tag": "Puzzle", "sub": "Find the optimal escape route from forced checks.", "meta": "10 puzzles", "soon": false, "state": "", "testKey": null, "keys": {"eb2/03-defending-from-check": 10}}, {"href": "04-special-moves/index.html", "tab": "04", "title": "Special Moves", "tag": "Theory", "sub": "Castling mechanics, En Passant, Pawn Promotion.", "meta": "10 puzzles", "soon": false, "state": "", "testKey": null, "keys": {"eb2/04-special-moves": 10}}, {"href": "05-attack-defense-medium/index.html", "tab": "05", "title": "Attack & Defense (Medium)", "tag": "Puzzle", "sub": "Calculate multiple attackers vs. defenders.", "meta": "10 puzzles", "soon": false, "state": "", "testKey": null, "keys": {"eb2/05-attack-defense-medium": 10}}, {"href": "06-castle-first-game/index.html", "tab": "06", "title": "The 'Castle First' Game", "tag": "Playing", "sub": "Strict rule: no attacks allowed until castled.", "meta": "10 puzzles", "soon": false, "state": "", "testKey": null, "keys": {"eb2/06-castle-first-game": 10}}, {"href": "07-castling-legality/index.html", "tab": "07", "title": "Castling Legality", "tag": "Puzzle", "sub": "Identify if castling is legal in complex scenarios.", "meta": "10 puzzles", "soon": false, "state": "", "testKey": null, "keys": {"eb2/07-castling-legality": 10}}, {"href": "08-coach-vs-student/index.html", "tab": "08", "title": "Coach vs. Student", "tag": "Playing", "sub": "Full game with aggressive checks from the coach.", "meta": "10 puzzles", "soon": false, "state": "", "testKey": null, "keys": {"eb2/08-coach-vs-student": 10}}, {"href": "09-threat-awareness/index.html", "tab": "09", "title": "Threat Awareness", "tag": "Analysis", "sub": "Review game to expose ignored enemy threats.", "meta": "10 puzzles", "soon": false, "state": "", "testKey": null, "keys": {"eb2/09-threat-awareness": 10}}, {"href": "10-test-ecb-t2/index.html", "tab": "10", "title": "ECB-T2", "tag": "Test", "sub": "Checks, Defense & Special Moves (min 75% required).", "meta": "10 questions · test", "soon": false, "state": "test", "testKey": "eb2/10-test-ecb-t2", "keys": {"eb2/10-test-ecb-t2": 10}}], "say": "EB2: Rules of Combat & King Safety. Each folder is one class topic."};
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const PIP = `
@@ -139,13 +157,31 @@ function starsFor(keys) {
 
 $('eyebrow').textContent = PAGE.crumb || '';
 $('h1').textContent = PAGE.heading;
-if (PAGE.up) { $('up').hidden = false; $('up').href = PAGE.up; $('up').textContent = '← All blocks'; }
+if (PAGE.up) { $('up').hidden = false; $('up').href = PAGE.up; $('up').textContent = PAGE.upLabel || '← All blocks'; }
+if (PAGE.card) {
+  $('card').hidden = false;
+  $('card').innerHTML = `<h2>${esc(PAGE.card.title)}</h2><ul>${PAGE.card.points.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`;
+}
+if (PAGE.links && PAGE.links.length) {
+  $('links').hidden = false;
+  $('links').innerHTML = PAGE.links.map((g) => `<div><h3>${esc(g.label)}</h3><ol>${g.links.map((l) =>
+    l.href ? `<li><a href="${esc(l.href)}">${esc(l.label)}</a></li>` : `<li><span>${esc(l.label)} · coming soon</span></li>`).join('')}</ol></div>`).join('');
+}
+let tests = {};
+try { tests = JSON.parse(localStorage.getItem('elvyn-eb-tests-v1') || '{}') || {}; } catch (_) { tests = {}; }
+function bestTest(key) {
+  const done = (tests[key] || []).filter((a) => a && a.done);
+  if (!done.length) return '';
+  const b = done.reduce((x, y) => (y.marks > x.marks ? y : x));
+  return `<span class="best${b.pass ? ' pass' : ''}">Best ${b.marks}/100${b.pass ? ' ✓' : ''}</span>`;
+}
 let totalGot = 0, totalMax = 0;
 $('grid').innerHTML = PAGE.items.map((it, i) => {
   const st = starsFor(it.keys || {});
   totalGot += st.got; totalMax += st.max;
-  const stars = showStars && st.max ? `<span class="stars">★ ${st.got} / ${st.max}</span>` : '';
-  const cls = `folder${it.soon ? ' soon' : ''}${showStars && st.max && st.got === st.max ? ' done' : ''}`;
+  const best = showStars && it.testKey ? bestTest(it.testKey) : '';
+  const stars = best || (showStars && st.max && !it.testKey ? `<span class="stars">★ ${st.got} / ${st.max}</span>` : '');
+  const cls = `folder${it.soon ? ' soon' : ''}${it.state ? ' ' + it.state : ''}${showStars && st.max && st.got === st.max ? ' done' : ''}`;
   const inner = `<span class="tab">${esc(it.tab)}</span><div class="body">
       ${it.tag ? `<span class="tag">${esc(it.tag)}</span>` : ''}
       <span class="plate">${esc(it.title)}</span>
