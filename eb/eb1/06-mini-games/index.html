@@ -33,6 +33,28 @@
     letter-spacing: .12em; text-transform: uppercase; }
   body.mode-coach .coachtag { display: inline-block; }
   body.mode-coach { --bg: #f4f6fa; }
+  /* Coach help (keys, arrows, checkpoint) sits behind the i button so the left column only holds what's used in class. */
+  .topbar { position: relative; }
+  .infobtn { display: none; flex: none; width: 32px; height: 32px; padding: 0; border-radius: 50%; border: 1px solid var(--line); background: #fff;
+    font: 700 15px/1 Georgia, serif; font-style: italic; place-items: center; transition: transform .18s ease, border-color .18s ease; }
+  .infobtn:hover { transform: scale(1.04); border-color: #a8a29e; }
+  .infobtn[aria-expanded="true"] { background: var(--navy); border-color: var(--navy); color: #fff; }
+  body.mode-coach .infobtn { display: inline-grid; }
+  body.mode-coach .tools { display: none; }
+  .infopop { position: absolute; right: 20px; top: calc(100% + 2px); z-index: 50; width: min(360px, calc(100vw - 20px)); padding: 14px 16px 6px;
+    background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 24px 44px -20px rgba(31, 42, 68, .45);
+    font-size: 13.5px; color: var(--ink); animation: fadein .15s ease; }
+  .infopop .ihead { margin: 0 0 6px; font: 600 10.5px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .infopop p { margin: 0 0 12px; line-height: 1.5; }
+  .infopop dl { margin: 0 0 12px; display: grid; grid-template-columns: auto 1fr; gap: 5px 12px; align-items: center; }
+  .infopop dt { white-space: nowrap; } .infopop dd { margin: 0; color: var(--muted); }
+  .infopop kbd { display: inline-block; min-width: 20px; padding: 0 5px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px;
+    background: #fff; font: 600 11.5px/18px var(--sans); text-align: center; color: var(--ink); }
+  /* Coach desktop: the board on the left, the controls in the middle, the islands on the far right (the student layout mirrored). */
+  @media (min-width: 761px) {
+    body.mode-coach .layout { grid-template-columns: minmax(0, 3fr) minmax(300px, 2fr) 120px; }
+    body.mode-coach .boardcol { order: 0; } body.mode-coach .info { order: 1; } body.mode-coach .rail { order: 2; }
+  }
 
   /* Desktop: everything to read and press on the left (about 40%), the board alone on the right (about 60%). */
   .layout { max-width: 1480px; margin: 0 auto; padding: 4px 20px 24px; display: grid; grid-template-columns: 120px minmax(300px, 2fr) minmax(0, 3fr);
@@ -139,7 +161,6 @@
 
   .tools { display: flex; gap: 8px 10px; flex-wrap: wrap; align-items: center; font-size: 13px; color: var(--muted); }
   .tools button { height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: #fff; font-size: 13px; }
-  .checkpoint { margin: 0; font-size: 13px; color: var(--muted); }
   #hintbox { padding: 10px 14px; border-radius: 10px; background: var(--amber-soft); border: 1px solid #fde68a; font-size: 15px; }
   #moves { font-variant-numeric: tabular-nums; font-size: 15px; line-height: 1.8; min-height: 28px; padding: 8px 12px; background: #fff;
     border: 1px solid var(--line); border-radius: 10px; color: var(--muted); }
@@ -151,9 +172,6 @@
   .btns button.primary { background: #111; border-color: #111; color: #fff; font-weight: 600; }
   .btns button.go { background: var(--good); border-color: var(--good); color: #fff; font-weight: 600; }
   .btns button:disabled { opacity: .4; cursor: default; }
-  .keys { margin: 0; font-size: 12.5px; color: var(--muted); line-height: 1.6; }
-  .keys kbd { display: inline-block; min-width: 20px; padding: 0 5px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px;
-    background: #fff; font: 600 11.5px/18px var(--sans); text-align: center; color: var(--ink); }
 
   .btns { display: flex; flex-wrap: wrap; }
   .btns button { flex: 1 1 120px; }
@@ -233,7 +251,8 @@
     .layout { display: flex; flex-direction: column; align-items: stretch; gap: 10px; padding: 0 8px 16px; }
     .info { display: contents; }
     #modebar { order: 0; } #dots { order: 1; } .talk { order: 2; } .boardcol { order: 3; } #options { order: 4; }
-    #hintbox, #moves { order: 5; } .btns { order: 6; } .tools, .keys, .checkpoint { order: 7; }
+    #hintbox, #moves { order: 5; } .btns { order: 6; } .tools { order: 7; }
+    .infopop { right: 10px; }
     .rail { --slot: 54px; flex-direction: row; align-items: flex-start; position: static; overflow-x: auto; overflow-y: hidden;
       scrollbar-width: none; margin: 0 -8px; padding: 10px 12px 0; }
     .rail::-webkit-scrollbar { display: none; }
@@ -313,7 +332,16 @@
   <h1 id="h1"></h1>
   <span id="timer" hidden>0:00</span>
   <span class="coachtag">Coach</span>
+  <button class="infobtn" id="infobtn" aria-label="Keys and help" aria-expanded="false" aria-controls="infopop">i</button>
   <a class="logo" href="../../index.html" aria-label="Elvyn Chess puzzles home"><img src="data:image/png;base64,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" alt="Elvyn" onerror="this.replaceWith('Elvyn')"></a>
+  <div class="infopop" id="infopop" role="dialog" aria-label="Keys and help" hidden>
+    <div id="ichk"><p class="ihead">Coach checkpoint</p><p id="foot"></p></div>
+    <p class="ihead">Keys</p>
+    <dl><dt><kbd>→</kbd> / <kbd>Space</kbd></dt><dd>next</dd><dt><kbd>←</kbd></dt><dd>back</dd><dt><kbd>H</kbd></dt><dd>hint</dd>
+      <dt><kbd>R</kbd></dt><dd>reset (puts a "what if" back)</dd><dt><kbd>F</kbd></dt><dd>flip</dd><dt><kbd>C</kbd></dt><dd>clear arrows</dd></dl>
+    <p class="ihead">On the board</p>
+    <p>Drag any piece to show a "what if".<br>Draw arrows: right-drag or Shift+drag (hold Alt for red).</p>
+  </div>
 </header>
 <main class="layout">
   <nav class="rail" id="dots" aria-label="Puzzles"></nav>
@@ -337,11 +365,8 @@
       <button id="cprev">← Prev</button><button id="cnext" class="primary">Next →</button><button id="chint">Hint (H)</button>
       <button id="creset">Reset (R)</button><button id="cflip">Flip (F)</button><button id="cclear">Clear (C)</button>
     </div>
-    <p class="keys" id="ckeys"><kbd>→</kbd>/<kbd>Space</kbd> next · <kbd>←</kbd> back · <kbd>H</kbd> hint · <kbd>R</kbd> reset · <kbd>F</kbd> flip · <kbd>C</kbd> clear arrows.
-      Drag any piece to show a "what if"; <kbd>R</kbd> puts it back.</p>
     <div class="tools"><span id="helptext">Draw arrows: right-drag or Shift+drag (hold Alt for red).</span>
       <button id="clear" title="Clear drawn arrows (C)">Clear arrows</button><button id="flip" title="Flip board (F)" hidden>Flip</button></div>
-    <p class="checkpoint" id="foot" hidden></p>
   </section>
   <section class="boardcol">
     <div class="frame" id="frame">
@@ -1096,8 +1121,12 @@ $('cnext').onclick = coachNext; $('cprev').onclick = coachPrev; $('chint').oncli
 $('creset').onclick = () => load(idx); $('cflip').onclick = flip; $('cclear').onclick = clearDrawn;
 $('pip').addEventListener('click', () => { if (!COACH && !S.solved) hint(); });
 $('fAgain').onclick = () => { $('finish').hidden = true; if (STRICT) showGate(); else load(0); };
+function setInfo(open) { $('infopop').hidden = !open; $('infobtn').setAttribute('aria-expanded', String(open)); }
+$('infobtn').onclick = () => setInfo($('infopop').hidden);
+document.addEventListener('pointerdown', (e) => { if (!$('infopop').hidden && !e.target.closest('#infopop, #infobtn')) setInfo(false); });
 document.addEventListener('keydown', (e) => {
   if (promo) { if (e.key === 'Escape') { e.preventDefault(); closePromo(true); } return; }
+  if (e.key === 'Escape' && !$('infopop').hidden) { setInfo(false); return; }
   if (e.ctrlKey || e.metaKey || e.altKey || /INPUT|TEXTAREA/.test(e.target.tagName)) return;
   const k = e.key;
   if (k === 'c' || k === 'C') { clearDrawn(); return; }
@@ -1244,9 +1273,9 @@ function finish() {
 // ------------------------------------------------------------------ page chrome
 $('back').textContent = `← ${T.label}`;
 $('h1').textContent = T.title;
-$('sbtns').hidden = COACH; $('cbtns').hidden = !COACH; $('ckeys').hidden = !COACH;
+$('sbtns').hidden = COACH; $('cbtns').hidden = !COACH;
 $('flip').hidden = true;  // the coach has Flip (F) with the other buttons
-if (COACH) { $('foot').hidden = false; $('foot').textContent = `Coach checkpoint: ${T.goal}`; }
+$('foot').textContent = T.goal || ''; $('ichk').hidden = !T.goal;
 if (STRICT) {
   $('modebar').hidden = false;
   $('modebar').innerHTML = `<b>${TEST ? 'Test' : 'Speed drill'}</b> · one try per question · no hints. Drawing arrows is allowed.`;
