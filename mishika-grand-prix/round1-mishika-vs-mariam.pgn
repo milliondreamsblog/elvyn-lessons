@@ -1,0 +1,41 @@
+[Event "Mädchen Grand Prix"]
+[Site "Germany"]
+[Date "2026.11.13"]
+[Round "1"]
+[White "Mishika"]
+[Black "Mariam"]
+[Result "0-1"]
+[Annotator "Elvyn · Stockfish 19"]
+
+{ Mishika goes for f7 with Ng5 and Qf3. Black has already castled, so f7 is well guarded, and the queen on f3 takes the knight's way home. Start at move 7. }
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. O-O Nf6 5. Nc3 d6 6. Ng5
+{ Ng5 goes for f7, but f7 is well guarded. Black has castled. The rook on f8 and the king both guard f7, so a knight and a bishop cannot win it. The Fried Liver idea works when Black's king is still on e8. }
+6... O-O 7. Qf3 $4
+{ The queen takes the knight's way home. Now f3 is full. If Black plays 7...h6, the knight on g5 is attacked and has no good square. On h3 it is out of play, and ...Nd4 hits the queen and c2. White would have to give the knight up on f7. The engine plays 7.h3. It stops ...Bg4 and keeps f3 free for the knight. }
+( 7. h3 { Engine's choice } 7... Ne7 8. Nf3 c6 9. d4 exd4 10. Nxd4 b5 11. Be2 )
+7... Bg4 $2
+{ Black misses 7...h6. Bg4 attacks the queen, but 7...h6 was much stronger. Now the queen moves to g3, and f3 is free again. }
+( 7... h6 { Engine's choice } 8. Nxf7 Rxf7 9. Bxf7+ Kxf7 10. h3 Nd4 11. Qd1 Bd7
+) 8. Qg3 h6 $6 9. Bxf7+ $2
+{ Two pieces for a rook is a bad deal. After 9.Bxf7+ Rxf7 10.Nxf7 Kxf7, White has given a bishop and a knight. Black gave a rook and a pawn. In the middlegame two pieces are usually stronger than a rook, and Black's pieces now come at White's king. The engine plays 9.Nd5 and hits the knight on f6. After 9...Nd4 10.Nxf6+ Qxf6 11.Qxg4 Qxg5 12.Qxg5 hxg5, White is a little better. }
+( 9. Nd5 { Engine's choice } 9... Bh5 10. Nxf6+ Qxf6 11. Nf3 Bxf3 12. Qxf3 Qxf3
+13. gxf3 ) 9... Rxf7 10. Nxf7 Kxf7 11. Nd5 $2
+{ The knight leaves the king. 11.Nd5 trades the last white knight. Black could now play 11...Nd4, with ...Ne2+ and ...Nxc2 coming. 11.Kh1 was safer. It takes the king off the g1-a7 diagonal, where the bishop on c5 is aiming. }
+( 11. Kh1 { Engine's choice } 11... Be6 12. d3 g5 13. Qf3 Kg7 14. Qe2 Qd7 15.
+Be3 ) 11... Be6 $2 ( 11... Nd4 { Engine's choice } 12. Kh1 Be2 13. Nxf6 Bxf1
+14. Nd5 Bc4 15. Ne3 Be6 ) 12. Nxf6 Qxf6 13. d3 $2
+{ Watch the knight jump to d4. 13.d3 lets Black's knight go to d4. From there it threatens two forks: ...Ne2+ hits the king and the queen on g3, and ...Nxc2 hits the rook on a1. 13.c3 keeps the knight out of d4. }
+( 13. c3 { Engine's choice } 13... Ne7 14. d3 Ng6 15. Be3 Nf4 16. Bxf4 exf4 17.
+Qf3 ) 13... Nd4 14. Kh1
+{ The king steps away so ...Ne2 no longer comes with check. But ...Nxc2 still forks the rook on a1, and Black wins more material. }
+14... Nxc2 15. Be3 Nxa1 16. Bxc5 dxc5 17. Rxa1 Kg8 18. a4 Rd8 19. Ra3 c4 20.
+Kg1 Kh7 21. h3 Rd4 22. Qe3 Qg6 23. Ra1 Rxd3
+{ Scoresheet: The sheet says Td3 (Rd3). A white pawn stands on d3, so the rook captures it: Rxd3. }
+24. Qxa7 $4
+{ The queen goes pawn hunting. Black's queen, rook and bishop are all near White's king. 24.Qxa7 takes a pawn far away. Then 24...Bxh3 breaks open the king, and Black has a forced mate. 24.Qe2 keeps the queen near the king. White is still worse, but there is no quick mate. }
+( 24. Qe2 { Engine's choice } 24... Bxh3 25. Qf1 Bg4 26. b3 Bf3 27. bxc4 Bxe4
+28. a5 ) 24... Bxh3 25. Kf1 Bxg2+ 26. Ke1 Bf3 27. Qxb7
+{ Look at their checks first. Black threatens 27...Qg1#. The queen on b7 is too far away to help. After 27.Kf1 Black still mates, but it takes longer. Scoresheet: White's 27th move is crossed out on the sheet. Dxb7 is written in Black's column, but only White's queen on a7 can take on b7, so it is White's 27th move. }
+27... Qg1#
+{ 27...Qg1# The queen checks along the first rank. Black's bishop on f3 covers e2 and d1, and the rook on d3 covers d2. The pawn on f2 blocks the last square. Scoresheet: Dg1# is written in White's column on row 28. White is the side that got mated (0-1), so it is Black's queen: 27...Qg1#. }
+0-1

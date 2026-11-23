@@ -1,0 +1,36 @@
+[Event "Mädchen Grand Prix"]
+[Site "Germany"]
+[Date "2026.11.13"]
+[Round "3"]
+[White "Alice"]
+[Black "Mishika"]
+[Result "1-0"]
+[Annotator "Elvyn · Stockfish 19"]
+
+{ Black's queen and king end up on the same diagonal as White's queen on b3. The game turns at 15...Be6, which loses a piece. After that, follow White's pawn as it walks from c4 to b7. }
+1. d4 d5 2. Nf3 Nf6 3. e3 Nc6
+{ The knight blocks the c-pawn. In the Queen's Gambit, Black usually fights for the centre with ...c5 or ...c6 later. A knight on c6 blocks that pawn. }
+4. c4 e6 5. Nc3 Bb4 6. Bd2 Bxc3 7. Bxc3 Ne4 8. Qc2 Nxc3 9. bxc3 O-O 10. Bd3 f5
+$6
+{ f5 opens a diagonal to the king. The pawn on f7 was shielding the king. After 10...f5 the diagonal from b3 to g8 is open, and e5 has no pawn to guard it. The engine plays 10...h6, a quiet move that keeps the f-pawn at home. }
+11. Rb1 Qf6 12. cxd5 exd5 13. Qb3 Qe6 $6
+{ Queen and king on one diagonal. The queen now stands on the b3-g8 diagonal, in front of her own king. Only the pawn on d5 separates her from White's queen. If that pawn disappears, White's queen pins her to the king. The engine plays 13...Rd8 and keeps the queen off that diagonal. }
+14. Ng5 $6 Qd6 15. c4 $6 Be6 $4
+{ Be6 loses a piece. After 16.Nxe6 Qxe6, the queen is back on the diagonal with her king. Then 17.cxd5 attacks the queen and the knight on c6 at once. The queen cannot take on d5: 17...Qxd5 18.Qxd5+ is check and wins her. The engine plays 15...Na5. It hits White's queen and the game stays about equal. }
+( 15... Na5 { Engine's choice } 16. Qb5 Nxc4 17. Bxc4 c6 18. Bxd5+ cxd5 19. O-O
+f4 ) 16. Nxe6 Qxe6 17. cxd5 Qe7
+{ Watch for a discovered check. The queen had to leave e6, and now 18.dxc6+ takes the knight with check. The pawn steps off the diagonal and White's queen on b3 checks the king. The engine plays 17...Nxd4, so the queens come off after 18.dxe6 Nxb3 19.Rxb3. Black is still a piece down. Scoresheet: The sheet says Dxe7, but there is nothing on e7 to take. The queen steps back from e6 to e7: 17...Qe7. (17...Qxe3+ does not fit, because White's next move 18.dxc6+ would then be illegal.) }
+18. dxc6+ Rf7 19. cxb7 Rb8 20. Bc4 c6
+{ The rook on f7 is attacked twice. The bishop on c4 and the queen behind it both hit f7. The king and queen defend it twice, but the rook is worth more than the bishop. 21.Bxf7+ wins the rook for a bishop. }
+21. Bxf7+ Qxf7
+{ Scoresheet: Row 21-22 is messy on the sheet (Dxf7+ in Black's column, Kxf7 in White's, Ke2 crossed out). The only reading that fits is 21...Qxf7 22.Qxf7+ Kxf7 23.Ke2. }
+22. Qxf7+ { Scoresheet: See the note on 21...Qxf7. } 22... Kxf7
+{ Scoresheet: See the note on 21...Qxf7. } 23. Ke2 h6 24. Rhc1
+{ Scoresheet: The sheet says Tc1. Both rooks can reach c1; it must be the h1 rook, because the b1 rook gives Rb7+ on move 29. }
+24... c5 25. Rxc5 h5 26. Rc8
+{ The rook on b8 has one job. The rook on b8 stops the b7 pawn from queening. 26.Rc8 attacks it. If 26...Rxc8 27.bxc8=Q, the pawn becomes a queen. If 26...Rxb7, then 27.Rxb7+ wins the rook. Black loses the rook either way. }
+26... Rxc8 27. bxc8=Q g5 28. Qc6 g4 29. Rb7+ Kf8
+{ No way out. Only two king moves are legal here, Kf8 and Kg8. Both lose to 30.Qc8#. The game was lost much earlier, at 15...Be6. }
+30. Qc8#
+{ 30.Qc8# The queen checks along the 8th rank and covers e8. The rook on b7 covers e7, f7 and g7, and g8 is still on the queen's line. }
+1-0
